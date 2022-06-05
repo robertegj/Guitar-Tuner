@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guitar-Tuner</title>
+</head>
+
+<body onload="startSound()">
+
+
+    <div id="soundControl" style="display:none">
+        frequency
+        <input type="range" id="fIn" min="40" max="6000" oninput="startSound()" />
+        <span id="fOut"></span><br>
+        type
+        <input type="range" id="tIn" min="0" max="3" oninput="startSound()" />
+        <span id="tOut"></span><br>
+        volume
+        <input type="range" id="vIn" min="0" max="100" oninput="startSound()" />
+        <span id="vOut"></span><br>
+        duration
+        <input type="range" id="dIn" min="1" max="5000" oninput="startSound()" />
+        <span id="dOut"></span>
+        <br>
+        <button onclick='beep();'>Play</button>
+    </div>
+
+    
+    <script>
+         function startSound() {
+                document.getElementById("soundControl").style.display = "inline-block";
+                frequency = document.getElementById("fIn").value;
+                document.getElementById("fOut").innerHTML = frequency + ' Hz';
+
+                switch (document.getElementById("tIn").value * 1) {
+                    case 0: type = 'sine'; break;
+                    case 1: type = 'square'; break;
+                    case 2: type = 'sawtooth'; break;
+                    case 3: type = 'triangle'; break;
+                }
+                document.getElementById("tOut").innerHTML = type;
+
+                volume = document.getElementById("vIn").value / 100;
+                document.getElementById("vOut").innerHTML = volume;
+
+                duration = document.getElementById("dIn").value;
+                document.getElementById("dOut").innerHTML = duration + ' ms';
+            }
+
+            function beep() {
+                audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+
+                var oscillator = audioCtx.createOscillator();
+                var gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                gainNode.gain.value = volume;
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+
+                oscillator.start();
+
+                setTimeout(
+                    function() {
+                    oscillator.stop();
+                    },
+                    duration
+                );
+            };
+    </script>
+</body>
+</html>
